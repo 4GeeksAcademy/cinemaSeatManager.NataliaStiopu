@@ -158,6 +158,48 @@ function contarAsientos(sala: number[][]): [number, number] {
 }
 
 // ============================================================
+// FUNCIÓN: buscarAsientosContiguos()
+// ============================================================
+
+/**
+ * Busca el primer par de asientos disponibles consecutivos horizontalmente
+ * en la sala. Recorre filas con for y columnas con while.
+ * 
+ * @param sala {number[][]} - Matriz de asientos
+ * @returns {number[][] | null} - Posiciones en numeración humana [[fila, col1], [fila, col2]] o null
+ */
+function buscarAsientosContiguos(sala: number[][]): number[][] | null {
+  // Bucle externo: recorre todas las FILAS (0 a 7 = filas 1 a 8)
+  for (let fila = 0; fila < 8; fila++) {
+    // Bucle interno: recorre las COLUMNAS de la fila actual
+    // Usamos while porque necesitamos avanzar hasta columna 9
+    // para poder comparar columna[i] con columna[i+1]
+    // El límite es 9 porque tenemos índices 0-9 (10 columnas)
+    // y necesitamos verificar columna + siguiente columna
+    let columna = 0;
+    
+    while (columna < 9) {
+      // Verifica si el asiento actual (columna) y el siguiente (columna+1) están disponibles (valor = 0)
+      if (sala[fila][columna] === 0 && sala[fila][columna + 1] === 0) {
+        // Si encuentra un par de asientos libres consecutivos:
+        // Convierte índices (0-7, 0-9) a numeración humana (1-8, 1-10)
+        // y devuelve el primer par encontrado
+        return [
+          [fila + 1, columna + 1],      // Primer asiento: [fila_humana, columna_humana]
+          [fila + 1, columna + 2]       // Segundo asiento: [fila_humana, columna_siguiente_humana]
+        ];
+      }
+      
+      // Avanza a la siguiente columna
+      columna++;
+    }
+  }
+
+  // Si termina los bucles sin encontrar un par, devuelve null
+  return null;
+}
+
+// ============================================================
 // EJECUCIÓN Y PRUEBAS
 // ============================================================
 
@@ -252,6 +294,93 @@ const porcentajeDisponibilidad = ((disponibles / 80) * 100).toFixed(2);
 console.log(`\n📊 PORCENTAJE DE OCUPACIÓN:`);
 console.log(`   • Ocupación: ${porcentajeOcupacion}%`);
 console.log(`   • Disponibilidad: ${porcentajeDisponibilidad}%`);
+
+// ===== BÚSQUEDA DE ASIENTOS CONTIGUOS =====
+console.log("\n\n🔍 BÚSQUEDA DE ASIENTOS CONTIGUOS");
+console.log("════════════════════════════════════════════════════");
+
+// Busca el primer par de asientos disponibles consecutivos
+const paEncontrado = buscarAsientosContiguos(matrizSala);
+
+if (paEncontrado !== null) {
+  const [asiento1, asiento2] = paEncontrado;
+  console.log(`✅ Par encontrado:`);
+  console.log(`   • Asiento 1: Fila ${asiento1[0]}, Columna ${asiento1[1]}`);
+  console.log(`   • Asiento 2: Fila ${asiento2[0]}, Columna ${asiento2[1]}`);
+  console.log(`   • En formato: [${asiento1}], [${asiento2}]`);
+} else {
+  console.log(`❌ No se encontraron asientos contiguos disponibles`);
+}
+
+// ===== PRUEBA 2: Ocupar más asientos y buscar nuevamente =====
+console.log("\n\n📝 PRUEBA ADICIONAL: Después de ocupar más asientos");
+console.log("────────────────────────────────────────────────────");
+
+// Ocupa algunos asientos para modificar el patrón
+console.log("Ocupando asientos: (1,2), (1,3), (4,1), (4,2), (4,3)...\n");
+reservarAsiento(matrizSala, 1, 2);
+reservarAsiento(matrizSala, 1, 3);
+reservarAsiento(matrizSala, 4, 1);
+reservarAsiento(matrizSala, 4, 2);
+reservarAsiento(matrizSala, 4, 3);
+
+// Muestra la sala actualizada
+console.log("🎬 SALA ACTUALIZADA:\n");
+mostrarSala(matrizSala);
+
+// Busca nuevamente
+console.log("\n🔍 Buscando asientos contiguos...\n");
+const paEncontrado2 = buscarAsientosContiguos(matrizSala);
+
+if (paEncontrado2 !== null) {
+  const [asiento1, asiento2] = paEncontrado2;
+  console.log(`✅ Nuevo par encontrado:`);
+  console.log(`   • Asiento 1: Fila ${asiento1[0]}, Columna ${asiento1[1]}`);
+  console.log(`   • Asiento 2: Fila ${asiento2[0]}, Columna ${asiento2[1]}`);
+  console.log(`   • En formato: [${asiento1}], [${asiento2}]`);
+} else {
+  console.log(`❌ No se encontraron asientos contiguos disponibles`);
+}
+
+// ===== PRUEBA 3: Ocupar casi toda la sala =====
+console.log("\n\n📝 PRUEBA EXTREMA: Ocupar casi toda la sala");
+console.log("────────────────────────────────────────────────────");
+
+console.log("Ocupando todos los asientos menos dos específicos...\n");
+
+// Ocupa todos los asientos disponibles excepto dos pares específicos
+for (let fila = 0; fila < 8; fila++) {
+  for (let columna = 0; columna < 10; columna++) {
+    // Deja libre un par en fila 2 (columnas 2-3) como único par disponible
+    if ((fila === 1 && columna >= 2 && columna <= 3)) {
+      // Mantiene estos libres
+      continue;
+    }
+    matrizSala[fila][columna] = 1;
+  }
+}
+
+// Muestra la sala casi llena
+console.log("🎬 SALA CASI LLENA:\n");
+mostrarSala(matrizSala);
+
+// Cuenta asientos
+const [ocupados3, disponibles3] = contarAsientos(matrizSala);
+console.log(`\n📊 Asientos ocupados: ${ocupados3}, Disponibles: ${disponibles3}\n`);
+
+// Busca el único par disponible
+console.log("🔍 Buscando asientos contiguos...\n");
+const paEncontrado3 = buscarAsientosContiguos(matrizSala);
+
+if (paEncontrado3 !== null) {
+  const [asiento1, asiento2] = paEncontrado3;
+  console.log(`✅ ÚNICO par encontrado:`);
+  console.log(`   • Asiento 1: Fila ${asiento1[0]}, Columna ${asiento1[1]}`);
+  console.log(`   • Asiento 2: Fila ${asiento2[0]}, Columna ${asiento2[1]}`);
+  console.log(`   • En formato: [${asiento1}], [${asiento2}]`);
+} else {
+  console.log(`❌ No se encontraron asientos contiguos disponibles`);
+}
 
 console.log("\n✅ Todas las pruebas completadas exitosamente");
 
