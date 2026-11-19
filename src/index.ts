@@ -123,6 +123,41 @@ function reservarAsiento(sala: number[][], fila: number, columna: number): strin
 }
 
 // ============================================================
+// FUNCIÓN: contarAsientos()
+// ============================================================
+
+/**
+ * Recorre toda la matriz y cuenta los asientos ocupados y disponibles.
+ * Devuelve ambos contadores en un arreglo de dos posiciones.
+ * 
+ * @param sala {number[][]} - Matriz de asientos a contar
+ * @returns {[number, number]} - Array con [ocupados, disponibles]
+ */
+function contarAsientos(sala: number[][]): [number, number] {
+  // Inicializa los contadores en 0
+  let ocupados = 0;
+  let disponibles = 0;
+
+  // Bucle externo: recorre todas las FILAS (0 a 7)
+  for (let fila = 0; fila < 8; fila++) {
+    // Bucle interno: recorre todas las COLUMNAS (0 a 9) de cada fila
+    for (let columna = 0; columna < 10; columna++) {
+      // Accede al valor actual de la posición [fila][columna]
+      if (sala[fila][columna] === 1) {
+        // Si el valor es 1 (ocupado), incrementa el contador de ocupados
+        ocupados++;
+      } else {
+        // Si el valor es 0 (disponible), incrementa el contador de disponibles
+        disponibles++;
+      }
+    }
+  }
+
+  // Devuelve ambos contadores como un arreglo de dos elementos
+  return [ocupados, disponibles];
+}
+
+// ============================================================
 // EJECUCIÓN Y PRUEBAS
 // ============================================================
 
@@ -189,6 +224,34 @@ console.log(resultado6);
 // Muestra la sala después de las operaciones
 console.log("\n\n🎬 ESTADO FINAL DE LA SALA (después de las reservas):\n");
 mostrarSala(matrizSala);
+
+// ===== CONTAR ASIENTOS =====
+console.log("\n\n📊 CONTEO DE ASIENTOS");
+console.log("════════════════════════════════════════════════════");
+
+// Llama a contarAsientos y obtiene los resultados
+const [ocupados, disponibles] = contarAsientos(matrizSala);
+
+// Muestra los resultados
+console.log(`✈️  Asientos ocupados:    ${ocupados}`);
+console.log(`🟢 Asientos disponibles: ${disponibles}`);
+console.log(`📋 Total de asientos:    ${ocupados + disponibles}`);
+
+// Verifica que la suma sea correcta (80 asientos en total)
+console.log("\n📈 VALIDACIÓN:");
+if (ocupados + disponibles === 80) {
+  console.log("✅ Suma correcta: ocupados + disponibles = 80");
+} else {
+  console.log(`❌ Error: ocupados (${ocupados}) + disponibles (${disponibles}) ≠ 80`);
+}
+
+// Calcula el porcentaje de ocupación
+const porcentajeOcupacion = ((ocupados / 80) * 100).toFixed(2);
+const porcentajeDisponibilidad = ((disponibles / 80) * 100).toFixed(2);
+
+console.log(`\n📊 PORCENTAJE DE OCUPACIÓN:`);
+console.log(`   • Ocupación: ${porcentajeOcupacion}%`);
+console.log(`   • Disponibilidad: ${porcentajeDisponibilidad}%`);
 
 console.log("\n✅ Todas las pruebas completadas exitosamente");
 
