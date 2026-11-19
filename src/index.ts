@@ -80,6 +80,49 @@ function mostrarSala(sala: number[][]): void {
 }
 
 // ============================================================
+// FUNCIÓN: reservarAsiento()
+// ============================================================
+
+/**
+ * Intenta reservar un asiento específico en la sala.
+ * Valida las coordenadas, verifica disponibilidad y actualiza la matriz.
+ * 
+ * @param sala {number[][]} - Matriz de asientos
+ * @param fila {number} - Número de fila (1-8, coordenadas humanas)
+ * @param columna {number} - Número de columna (1-10, coordenadas humanas)
+ * @returns {string} - Mensaje indicando resultado de la operación
+ */
+function reservarAsiento(sala: number[][], fila: number, columna: number): string {
+  // ===== VALIDACIÓN 1: Verificar que fila esté en rango válido (1-8) =====
+  if (fila < 1 || fila > 8) {
+    return `❌ Error: La fila debe estar entre 1 y 8. Ingresaste: ${fila}`;
+  }
+
+  // ===== VALIDACIÓN 2: Verificar que columna esté en rango válido (1-10) =====
+  if (columna < 1 || columna > 10) {
+    return `❌ Error: La columna debe estar entre 1 y 10. Ingresaste: ${columna}`;
+  }
+
+  // ===== CONVERSIÓN: Convertir de coordenadas humanas a índices de JavaScript =====
+  // Las filas y columnas van de 1-8 y 1-10 respectivamente
+  // Pero los arrays en JavaScript comienzan en índice 0
+  // Por eso restamos 1 a ambas coordenadas
+  const indiceF = fila - 1;      // Fila 1 → índice 0, Fila 8 → índice 7
+  const indiceC = columna - 1;   // Columna 1 → índice 0, Columna 10 → índice 9
+
+  // ===== VALIDACIÓN 3: Verificar si el asiento ya está ocupado =====
+  if (sala[indiceF][indiceC] === 1) {
+    return `❌ El asiento de la fila ${fila}, columna ${columna} ya está ocupado.`;
+  }
+
+  // ===== ACCIÓN: Cambiar el valor del asiento de 0 a 1 =====
+  sala[indiceF][indiceC] = 1;
+
+  // ===== CONFIRMACIÓN: Devolver mensaje de éxito =====
+  return `✅ Reserva realizada correctamente: fila ${fila}, columna ${columna}.`;
+}
+
+// ============================================================
 // EJECUCIÓN Y PRUEBAS
 // ============================================================
 
@@ -95,7 +138,7 @@ console.log(`   • Número de columnas: ${matrizSala[0].length}`);
 console.log(`   • Total de asientos: ${matrizSala.length * matrizSala[0].length}\n`);
 
 // Simula algunos asientos ocupados (valores 1) para demostración
-console.log("🎫 Simulando algunas reservas para demostración...\n");
+console.log("🎫 Simulando algunas reservas previas...\n");
 matrizSala[0][2] = 1; // Fila 1, Columna 3 → Ocupado
 matrizSala[0][9] = 1; // Fila 1, Columna 10 → Ocupado
 matrizSala[1][5] = 1; // Fila 2, Columna 6 → Ocupado
@@ -103,10 +146,50 @@ matrizSala[2][1] = 1; // Fila 3, Columna 2 → Ocupado
 matrizSala[4][4] = 1; // Fila 5, Columna 5 → Ocupado
 matrizSala[7][0] = 1; // Fila 8, Columna 1 → Ocupado
 
-// Muestra la sala con la visualización formateada
-console.log("🎬 ESTADO DE LA SALA:\n");
+// Muestra la sala inicial
+console.log("🎬 ESTADO INICIAL DE LA SALA:\n");
 mostrarSala(matrizSala);
 
-console.log("\n✅ Función completada exitosamente");
+// ===== PRUEBA 1: Reserva correcta =====
+console.log("\n\n📝 PRUEBA 1: Reservar un asiento disponible (Fila 3, Columna 5)");
+console.log("────────────────────────────────────────────────────");
+const resultado1 = reservarAsiento(matrizSala, 3, 5);
+console.log(resultado1);
+
+// ===== PRUEBA 2: Intentar reservar el mismo asiento =====
+console.log("\n📝 PRUEBA 2: Intentar reservar el mismo asiento (Fila 3, Columna 5)");
+console.log("────────────────────────────────────────────────────");
+const resultado2 = reservarAsiento(matrizSala, 3, 5);
+console.log(resultado2);
+
+// ===== PRUEBA 3: Fila inválida (mayor a 8) =====
+console.log("\n📝 PRUEBA 3: Intentar reservar con fila inválida (Fila 10, Columna 5)");
+console.log("────────────────────────────────────────────────────");
+const resultado3 = reservarAsiento(matrizSala, 10, 5);
+console.log(resultado3);
+
+// ===== PRUEBA 4: Columna inválida (mayor a 10) =====
+console.log("\n📝 PRUEBA 4: Intentar reservar con columna inválida (Fila 5, Columna 15)");
+console.log("────────────────────────────────────────────────────");
+const resultado4 = reservarAsiento(matrizSala, 5, 15);
+console.log(resultado4);
+
+// ===== PRUEBA 5: Coordenadas negativas =====
+console.log("\n📝 PRUEBA 5: Intentar reservar con coordenadas negativas (Fila 0, Columna 5)");
+console.log("────────────────────────────────────────────────────");
+const resultado5 = reservarAsiento(matrizSala, 0, 5);
+console.log(resultado5);
+
+// ===== PRUEBA 6: Otra reserva correcta =====
+console.log("\n📝 PRUEBA 6: Reservar otro asiento disponible (Fila 7, Columna 8)");
+console.log("────────────────────────────────────────────────────");
+const resultado6 = reservarAsiento(matrizSala, 7, 8);
+console.log(resultado6);
+
+// Muestra la sala después de las operaciones
+console.log("\n\n🎬 ESTADO FINAL DE LA SALA (después de las reservas):\n");
+mostrarSala(matrizSala);
+
+console.log("\n✅ Todas las pruebas completadas exitosamente");
 
 export {};
